@@ -1,10 +1,10 @@
-package com.ilearn.spring.batch;
+package com.bs.ilearn.spring.batch;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ILearnSpringBatchShedlockApplicationTests {
+class ShedLockSpringBatchApplicationTests {
 
 	@Test
 	void contextLoads() {

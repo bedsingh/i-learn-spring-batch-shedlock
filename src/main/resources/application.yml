@@ -1,0 +1,22 @@
+#
+spring:
+  application:
+    name: i-learn-spring-batch-shedlock
+  profiles:
+    active:
+      - dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bs-spring-batch-db
+    username: bedsingh
+    password: admin123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+application:
+  logger:
+    dirs: logs
+    level: info
