@@ -1,5 +1,8 @@
-# i-learn-spring-batch-shedlock
-i-learn-spring-batch-shedlock
+## i-learn-spring-batch-shedlock
+
+Implemented shedlock library which is used in the batch application to allow only one instance to execute at given time for particular lock period. 
+If any job trigger more than one time in a give least time then shedlock wont trigger the new instance until the least time or batch job executed successfully
+
 
 ```java
 package com.bs.ilearn.spring.batch;
@@ -87,6 +90,20 @@ CREATE TABLE IF NOT EXISTS batch_shedlock(
 ![img.png](documents/shedlock-table-data.png)
 
 <br/>  
+
+## Batch Job Architecture:
+
+![img.png](documents/batch-job-architecture-1.png) 
+
+<br/>  
+
+## Important URLs
+
+- Batch job DDL: https://docs.spring.io/spring-batch/reference/schema-appendix.html
+- Helpful document: https://docs.spring.io/spring-batch/reference/job.html
+- Batch job sample example: 
+  - https://spring.io/guides/gs/batch-processing
+  - https://github.com/spring-guides/gs-batch-processing/tree/main
 
 ```
 Author Bed Singh

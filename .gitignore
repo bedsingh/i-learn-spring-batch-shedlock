@@ -5,6 +5,9 @@ logs/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+.DS_Store
+**/.DS_Store
+
 ### Spring Tool Suite ###
 .apt_generated
 .classpath

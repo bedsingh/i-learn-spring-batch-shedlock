@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**************************************************************************************************************
@@ -27,10 +28,13 @@ public class ShedLockSpringBatchApplication {
 		final String startMsg = "******** ShedLock Spring Batch Application Starting, Please Wait...********";
 		printLog(startMsg);
 
-		SpringApplication.run(ShedLockSpringBatchApplication.class, args);
-
+		ConfigurableApplicationContext context = SpringApplication.run(ShedLockSpringBatchApplication.class, args);
 		final String successMsg = "********* ShedLock Spring Batch Application Started Successfully. *********";
 		printLog(successMsg);
+
+		//int batchJobExitStatus = SpringApplication.exit(context);
+		//LOGGER.info("batchJobExitStatus: {}", batchJobExitStatus);
+		//System.exit(batchJobExitStatus);
 	}
 
 	private static void printLog(String message) {
