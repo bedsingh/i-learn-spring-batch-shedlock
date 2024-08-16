@@ -1,5 +1,6 @@
 package com.bs.ilearn.spring.batch.config;
 
+import com.bs.ilearn.spring.batch.entity.StockDataEntity;
 import com.bs.ilearn.spring.batch.model.StockData;
 import com.bs.ilearn.spring.batch.service.processor.StockDataItemProcessor;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +44,7 @@ public class StockDataBatchConfiguration {
 				.resource(new ClassPathResource("input-data/STOCK_US_XNAS_AAL_SAMPLE.csv"))
 				.delimited()
 				.names("Date", "Open", "High", "Low", "Close", "Volume")
+				.linesToSkip(1)
 				.targetType(StockData.class)
 				.build();
 	}
@@ -56,10 +58,10 @@ public class StockDataBatchConfiguration {
 
 	//Item Writer write the data to the sql tables.
 	@Bean
-	public JdbcBatchItemWriter<StockData> itemWriter(DataSource dataSource) {
+	public JdbcBatchItemWriter<StockDataEntity> itemWriter(DataSource dataSource) {
 		LOGGER.info("Creating itemWriter object...");
-		return new JdbcBatchItemWriterBuilder<StockData>()
-				.sql("INSERT INTO STOCK_DATA (stockName, stockDate, open, high, low, volume) VALUES (:stockName, :stockDate, :open, :high, :low, :volume)")
+		return new JdbcBatchItemWriterBuilder<StockDataEntity>()
+				.sql("INSERT INTO STOCK_DATA (stockName, date, open, high, low, volume) VALUES (:stockName, :stockDate, :open, :high, :low, :volume)")
 				.dataSource(dataSource)
 				.beanMapped()
 				.build();
@@ -77,10 +79,13 @@ public class StockDataBatchConfiguration {
 
 	//Step creation
 	@Bean
-	public Step stockDataStep(JobRepository jobRepository, DataSourceTransactionManager transactionManager, FlatFileItemReader<StockData> itemReader, StockDataItemProcessor itemProcessor, JdbcBatchItemWriter<StockData> itemWriter) {
+	public Step stockDataStep(JobRepository jobRepository, DataSourceTransactionManager transactionManager, FlatFileItemReader<StockData>
+			itemReader, StockDataItemProcessor itemProcessor, JdbcBatchItemWriter<StockDataEntity> itemWriter) {
+
 		LOGGER.info("Creating stockDataStep object...");
+
 		return new StepBuilder("stockDataStep", jobRepository)
-				.<StockData, StockData>chunk(5, transactionManager)
+				.<StockData, StockDataEntity>chunk(5, transactionManager)
 				.reader(itemReader)
 				.processor(itemProcessor)
 				.writer(itemWriter)

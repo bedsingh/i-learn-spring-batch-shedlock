@@ -1,5 +1,9 @@
 package com.bs.ilearn.spring.batch.service.writer;
 
+import com.bs.ilearn.spring.batch.config.StockDataBatchConfiguration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**************************************************************************************************************
  * Date: 8/13/24 8:58 PM | Author: Singh, Ved |
  * To change this template, goto Settings or Preferences | Editor | File and Code Templates | Includes tab
@@ -9,5 +13,6 @@ package com.bs.ilearn.spring.batch.service.writer;
 
 public class StockDataItemWriter {
 
+	private static final Logger LOGGER = LogManager.getLogger(StockDataBatchConfiguration.class);
 
 }

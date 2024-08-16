@@ -40,12 +40,12 @@ public class MyScheduledJob {
 	}
 
 	@Scheduled(cron = "0 0/1 * * * ?") //every 1 minutes
-	@SchedulerLock(name = "myScheduledJob", lockAtLeastFor = "1m", lockAtMostFor = "5m")
+	@SchedulerLock(name = "myScheduledJob", lockAtLeastFor = "30s", lockAtMostFor = "1m")
 	public void execute() throws InterruptedException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
 		LOGGER.info("BatchJob Started at time. : {}", LocalDateTime.now());
 
 		jobLauncher.run(loadStockDataJob, new JobParameters());
-		Thread.sleep(120000); //to delay the minimum time
+		Thread.sleep(13000); //to delay the minimum time
 		// call here actual batch job logic
 		// Reader
 		// Processor
