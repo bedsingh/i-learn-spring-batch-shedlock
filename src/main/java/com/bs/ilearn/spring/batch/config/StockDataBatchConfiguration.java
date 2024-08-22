@@ -3,6 +3,8 @@ package com.bs.ilearn.spring.batch.config;
 import com.bs.ilearn.spring.batch.entity.StockDataEntity;
 import com.bs.ilearn.spring.batch.model.StockData;
 import com.bs.ilearn.spring.batch.service.processor.StockDataItemProcessor;
+import com.bs.ilearn.spring.batch.service.reader.StockDataItemReader;
+import com.bs.ilearn.spring.batch.service.writer.StockDataItemWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.Job;
@@ -11,13 +13,11 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
@@ -35,8 +35,9 @@ public class StockDataBatchConfiguration {
 
 	private static final Logger LOGGER = LogManager.getLogger(StockDataBatchConfiguration.class);
 
+
 	//Item Reader start reading csv data
-	@Bean
+/*	@Bean
 	public FlatFileItemReader<StockData> itemReader() {
 		LOGGER.info("Creating itemReader object...");
 		return new FlatFileItemReaderBuilder<StockData>()
@@ -47,23 +48,24 @@ public class StockDataBatchConfiguration {
 				.linesToSkip(1)
 				.targetType(StockData.class)
 				.build();
-	}
+	}*/
 
 	//Item Processor start processing csv data
-	@Bean
+/*	@Bean
 	public StockDataItemProcessor itemProcessor() {
 		LOGGER.info("Creating itemProcessor object...");
 		return new StockDataItemProcessor();
-	}
+	}*/
 
 	//Item Writer write the data to the sql tables.
 	@Bean
 	public JdbcBatchItemWriter<StockDataEntity> itemWriter(DataSource dataSource) {
 		LOGGER.info("Creating itemWriter object...");
 		return new JdbcBatchItemWriterBuilder<StockDataEntity>()
-				.sql("INSERT INTO STOCK_DATA (stockName, date, open, high, low, volume) VALUES (:stockName, :stockDate, :open, :high, :low, :volume)")
+				.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
+				.sql("INSERT INTO STOCK_DATA (ID, STOCK_DATE, STOCK_NAME, OPEN, HIGH, LOW, CLOSE, VOLUME) VALUES (:stockId, :stockDate, :stockName, :open, :high, :low, :close, :volume)")
 				.dataSource(dataSource)
-				.beanMapped()
+				.columnMapped()
 				.build();
 	}
 
@@ -79,16 +81,18 @@ public class StockDataBatchConfiguration {
 
 	//Step creation
 	@Bean
-	public Step stockDataStep(JobRepository jobRepository, DataSourceTransactionManager transactionManager, FlatFileItemReader<StockData>
-			itemReader, StockDataItemProcessor itemProcessor, JdbcBatchItemWriter<StockDataEntity> itemWriter) {
+	public Step loadStockDataStep(JobRepository jobRepository, DataSourceTransactionManager transactionManager,
+							  StockDataItemReader itemReader,
+							  StockDataItemProcessor itemProcessor,
+							  JdbcBatchItemWriter<StockDataEntity> itemWriter) {
+		LOGGER.info("Creating loadStockDataStep object...");
 
-		LOGGER.info("Creating stockDataStep object...");
-
-		return new StepBuilder("stockDataStep", jobRepository)
+		return new StepBuilder("loadStockDataStep", jobRepository)
 				.<StockData, StockDataEntity>chunk(5, transactionManager)
 				.reader(itemReader)
 				.processor(itemProcessor)
 				.writer(itemWriter)
+				.allowStartIfComplete(true)
 				.build();
 	}
 

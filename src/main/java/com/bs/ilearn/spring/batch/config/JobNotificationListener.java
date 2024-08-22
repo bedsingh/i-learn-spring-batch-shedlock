@@ -1,6 +1,6 @@
 package com.bs.ilearn.spring.batch.config;
 
-import com.bs.ilearn.spring.batch.model.StockData;
+import com.bs.ilearn.spring.batch.entity.StockDataEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.BatchStatus;
@@ -32,18 +32,22 @@ public class JobNotificationListener implements JobExecutionListener {
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		LOGGER.info("Job Started, JobID: {}, Status: {}, StartTime: {}", jobExecution.getJobId(), jobExecution.getStatus(), jobExecution.getStartTime());
+		LOGGER.info("JobNotificationListener: Job Started, JobID: {}, Status: {}, StartTime: {}", jobExecution.getJobId(), jobExecution.getStatus(), jobExecution.getStartTime());
 	}
 
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		LOGGER.info("Job Finished! Status: {}", jobExecution.getStatus());
+		LOGGER.info("JobNotificationListener: Job Finished! Status: {}", jobExecution.getStatus());
 
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
 			LOGGER.info("Job Finished! Time to verify the results");
-			jdbcTemplate.query("SELECT stockName, stockDate, open, high, low, volume FROM StockData", new DataClassRowMapper<>(StockData.class))
-					.forEach(stockData -> LOGGER.info("Found <{{}}> in the database.", stockData ));
+			var stockDataEntityList = jdbcTemplate.query("SELECT ID, STOCK_DATE, STOCK_NAME, OPEN, HIGH, LOW, CLOSE, VOLUME FROM STOCK_DATA", new DataClassRowMapper<>(StockDataEntity.class))
+					.parallelStream()
+					.toList();
+
+			LOGGER.info("Total {} Records found in Database Table: STOCK_DATA", stockDataEntityList.size());
+					//.forEach(stockData -> LOGGER.info("Found <{{}}> in the database.", stockData ));
 		}
 	}
 

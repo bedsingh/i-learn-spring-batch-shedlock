@@ -5,11 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -27,19 +30,39 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @AllArgsConstructor
+@Table(name = "STOCK_DATA")
 public class StockDataEntity implements Serializable {
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "stockId", nullable = false)
+	@Column(name = "ID", nullable = false)
 	private Long stockId;
 
-	private LocalDate date;
-	private double high;
-	private double low;
-	private double close;
-	private double open;
-	private long volume;
+	@Column(name = "STOCK_DATE", nullable = false)
+	private LocalDate stockDate;
+
+	@Column(name = "STOCK_NAME", nullable = false)
 	private String stockName;
+
+	@Column(name = "OPEN", nullable = false)
+	private double open;
+
+	@Column(name = "HIGH", nullable = false)
+	private double high;
+
+	@Column(name = "LOW", nullable = false)
+	private double low;
+
+	@Column(name = "CLOSE", nullable = false)
+	private double close;
+
+	@Column(name = "VOLUME", nullable = false)
+	private long volume;
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
 }
 

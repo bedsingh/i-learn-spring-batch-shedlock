@@ -2,10 +2,13 @@ package com.bs.ilearn.spring.batch.service.processor;
 
 import com.bs.ilearn.spring.batch.entity.StockDataEntity;
 import com.bs.ilearn.spring.batch.model.StockData;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -17,26 +20,28 @@ import java.time.format.DateTimeFormatter;
  *
  **************************************************************************************************************/
 
+@Component
 public class StockDataItemProcessor implements ItemProcessor<StockData, StockDataEntity> {
 
 	private static final Logger LOGGER = LogManager.getLogger(StockDataItemProcessor.class);
 
 	@Override
-	public StockDataEntity process(StockData inputItem) throws Exception {
-		LOGGER.info("Processing Record: {}", inputItem);
+	public StockDataEntity process(@NonNull StockData inputItem) throws Exception {
+		LOGGER.debug("ItemProcessor Processing Record: {}", inputItem);
+		Thread.sleep(1);
 
-
-		StockDataEntity stockDataEntity = StockDataEntity.builder()
-				.date(LocalDate.parse(inputItem.getDate(), DateTimeFormatter.ofPattern("M/d/yyyy")))
+		var stockDataEntity = StockDataEntity.builder()
+				.stockId(Instant.now().toEpochMilli())
+				.stockDate(LocalDate.parse(inputItem.getDate(), DateTimeFormatter.ofPattern("M/d/yyyy")))
+				.stockName("AAL")
+				.open(inputItem.getOpen())
+				.high(inputItem.getHigh())
+				.low(inputItem.getLow())
 				.close(inputItem.getClose())
 				.volume(inputItem.getVolume())
-				.low(inputItem.getLow())
-				.high(inputItem.getHigh())
-				.open(inputItem.getOpen())
-				.stockName("AAL")
 				.build();
 
-		LOGGER.info("Processed Record: {}", stockDataEntity);
+		LOGGER.info("ItemProcessor Processed Item: {}", stockDataEntity);
 
 		return stockDataEntity;
 	}

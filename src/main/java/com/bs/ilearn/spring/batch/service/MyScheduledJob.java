@@ -1,5 +1,6 @@
 package com.bs.ilearn.spring.batch.service;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**************************************************************************************************************
@@ -40,18 +43,16 @@ public class MyScheduledJob {
 	}
 
 	@Scheduled(cron = "0 0/1 * * * ?") //every 1 minutes
-	@SchedulerLock(name = "myScheduledJob", lockAtLeastFor = "30s", lockAtMostFor = "1m")
+	@SchedulerLock(name = "LOAD_STOCK_DATA_BATCH_JOB", lockAtLeastFor = "30s", lockAtMostFor = "1m")
 	public void execute() throws InterruptedException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-		LOGGER.info("BatchJob Started at time. : {}", LocalDateTime.now());
+		var startTime = Instant.now();
+		LOGGER.info("BatchJob LOAD_STOCK_DATA_BATCH_JOB Started at time: {}", LocalDateTime.now());
 
 		jobLauncher.run(loadStockDataJob, new JobParameters());
 		Thread.sleep(13000); //to delay the minimum time
-		// call here actual batch job logic
-		// Reader
-		// Processor
-		// Writer
 
-		LOGGER.info("BatchJob Completed at time: {}", LocalDateTime.now());
+		long executionTime = Duration.between(startTime, Instant.now()).toSeconds();
+		LOGGER.info("BatchJob LOAD_STOCK_DATA_BATCH_JOB COMPLETED at: {}, EXECUTION_TIME: {} Seconds.", LocalDateTime.now(), executionTime);
 	}
 
 }

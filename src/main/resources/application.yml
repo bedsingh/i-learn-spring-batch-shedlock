@@ -10,13 +10,13 @@ spring:
     username: bedsingh
     password: admin123
   jpa:
+    database: POSTGRESQL
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 application:
+  input:
+    file-path: input-data/STOCK_US_XNAS_AAL_SAMPLE.csv
   logger:
     dirs: logs
     level: info
